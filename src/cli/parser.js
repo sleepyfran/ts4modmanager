@@ -9,14 +9,14 @@ import { tail, drop } from 'lodash';
  * @returns {[Command, string[]]} Array with the first element being the command and the second element being the arguments.
  */
 export const parse = args => {
-    if (!args) return undefined;
-    if (args.length < 1) return undefined;
+    if (!args) return [noop, []];
+    if (args.length < 1) return [noop, []];
 
     const appArgs = drop(args, 2);
     const commandName = appArgs[0];
     const commandArgs = tail(appArgs);
 
-    if (!commandName) return undefined;
+    if (!commandName) return [noop, []];
 
     const matchingCommand = Commands.find(command =>
         command.matchingNames.includes(commandName),

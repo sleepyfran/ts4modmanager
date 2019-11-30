@@ -1,10 +1,14 @@
+import chalk from 'chalk';
+
 export default {
     name: 'noop',
     explanation: '',
     matchingNames: [''],
-    execute: args => {
+    execute: () => {
         console.log(
-            "No input specified. Use 'help' to show the list of available commands.",
+            chalk.red(
+                "No input specified. Use 'help' to show the list of available commands.",
+            ),
         );
     },
 };
