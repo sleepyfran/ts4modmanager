@@ -1,0 +1,23 @@
+{
+  "name": "ts4modmanager",
+  "version": "1.0.0",
+  "description": "A mod manager for The Sims 4 with auto updates",
+  "main": "src/ts4modmanager.js",
+  "repository": "git@github.com:sleepyfran/ts4modmanager.git",
+  "author": "Fran González <fgonzaleva@icloud.com>",
+  "license": "GPL-3.0",
+  "scripts": {
+    "start": "babel-node src/ts4modmanager.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^12.12.14"
+  },
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "lodash": "^4.17.15"
+  }
+}
