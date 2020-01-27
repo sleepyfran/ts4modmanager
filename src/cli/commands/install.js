@@ -16,20 +16,26 @@ import chalk from 'chalk';
  */
 const multipleFilesChoice = async modInfo => {
     console.log(
-        chalk.green(
+        chalk.blue(
             `Found ${modInfo.files.length} files to download for the mod \"${modInfo.name}\", which one do you want to download?`,
         ),
     );
 
+    const numberOfFiles = modInfo.files.length;
     modInfo.files.forEach((file, index) => {
         console.log(chalk.green(`${index + 1}. ${file.name}`));
     });
+    console.log(chalk.green(`${numberOfFiles + 1}. All of them`));
 
-    return getInput('Input the number from the file you wish to download').then(
-        input => {
-            return modInfo.files[input];
-        },
-    );
+    return getInput(
+        chalk.blue('Input the number from the file you wish to download'),
+    ).then(input => {
+        return +input === numberOfFiles + 1
+            ? modInfo.files
+            : modInfo.files[+input - 1]
+            ? [modInfo.files[+input - 1]]
+            : [];
+    });
 };
 
 export default {
@@ -62,7 +68,21 @@ export default {
             .then(modInfo => {
                 if (modInfo.files.length > 1)
                     return multipleFilesChoice(modInfo);
+
+                console.log(
+                    chalk.blue(`Found one file for the mod ${modInfo.name}`),
+                );
+                return modInfo.files;
             })
-            .then(files => console.log(files));
+            .then(files => {
+                if (files.length === 0)
+                    return console.log(
+                        chalk.red('No files specified; exiting'),
+                    );
+
+                console.log(
+                    chalk.blue(`Attempting to download ${files.length} files`),
+                );
+            });
     },
 };
