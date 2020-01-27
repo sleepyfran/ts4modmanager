@@ -2,6 +2,9 @@ import ModTheSimsDownloader from './modthesims';
 
 /**
  * @typedef {Object} DateInformation
+ * @property {string} dateFormat Format of the dates to parse. Should not have any whitespace in the format since they
+ * are removed from the original string.
+ * @property {string} dateLocale Locale of the date format.
  * @property {string} createdSelector HTML selector to a text that can indicate when the mod was uploaded/created.
  * @property {string} updatedSelector HTML selector to a text that can indicate when the mod was updated.
  * @property {boolean} containedInSameElement Defines whether the downloader needs special handling for cases like in
@@ -9,6 +12,7 @@ import ModTheSimsDownloader from './modthesims';
  * @property {string} createdTitle Title that goes before the actual created date. See `containedInSameElement`.
  * @property {string} updatedTitle Title that goes before the actual updated date. See `containedInSameElement`.
  * @property {string} titleSeparator Separator between the update and the create date. See `containedInSameElement`.
+ * @property {string} titleEndSeparator Ending separator of the title.
  */
 
 /**
@@ -30,6 +34,7 @@ import ModTheSimsDownloader from './modthesims';
  * @typedef {Object} Downloader
  * @property {string} name Name of the downloader.
  * @property {string[]} matchers URLs that can match to this downloader. Should be unique to the downloader.
+ * @property {string} modNameSelector HTML selector to the name of the mod.
  * @property {DateInformation} dateInformation Information to fetch the created and updated dates.
  * @property {DownloadInformation} downloadInformation Information to fetch the download URL.
  */
