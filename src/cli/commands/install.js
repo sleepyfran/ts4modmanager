@@ -85,6 +85,13 @@ export default {
                         `⬇️ Attempting to download ${files.length} files`,
                     ),
                 );
+            })
+            .catch(err => {
+                console.log(
+                    chalk.red(
+                        `🚫 There was an error retrieving the content, maybe the given URL is not a valid mod?`,
+                    ),
+                );
             });
     },
 };
