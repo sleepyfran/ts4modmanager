@@ -17,7 +17,7 @@ import chalk from 'chalk';
 const multipleFilesChoice = async modInfo => {
     console.log(
         chalk.blue(
-            `Found ${modInfo.files.length} files to download for the mod \"${modInfo.name}\", which one do you want to download?`,
+            `✅ Found ${modInfo.files.length} files to download for the mod \"${modInfo.name}\", which one do you want to download?`,
         ),
     );
 
@@ -28,7 +28,7 @@ const multipleFilesChoice = async modInfo => {
     console.log(chalk.green(`${numberOfFiles + 1}. All of them`));
 
     return getInput(
-        chalk.blue('Input the number from the file you wish to download'),
+        chalk.blue('🔢 Input the number from the file you wish to download'),
     ).then(input => {
         return +input === numberOfFiles + 1
             ? modInfo.files
@@ -48,19 +48,19 @@ export default {
         if (args.length == 0) return console.log(chalk.red('No URL specified'));
 
         const url = args[0];
-        console.log(chalk.blue(`Attempting to download mod from ${url}`));
+        console.log(chalk.blue(`🔍 Attempting to download mod from ${url}`));
 
         const [result, downloader] = findDownloader(url);
         if (result === NotAnUrl)
-            return console.log(chalk.red('The given URL is not valid'));
+            return console.log(chalk.red('🚫 The given URL is not valid'));
         else if (result === NotAvailable)
-            return console.log(chalk.red('The given URL is not available'));
+            return console.log(chalk.red('👎 The given URL is not available'));
         else if (result === UnrecognizedSite)
-            return console.log(chalk.red('The given URL is not supported'));
+            return console.log(chalk.red('☹️ The given URL is not supported'));
 
         console.log(
             chalk.blue(
-                `The given URL was recognized for the downloader ${downloader.name}; parsing content`,
+                `🚚 The given URL was recognized for the downloader ${downloader.name}; fetching and parsing content`,
             ),
         );
 
@@ -70,18 +70,20 @@ export default {
                     return multipleFilesChoice(modInfo);
 
                 console.log(
-                    chalk.blue(`Found one file for the mod ${modInfo.name}`),
+                    chalk.blue(`✅ Found one file for the mod ${modInfo.name}`),
                 );
                 return modInfo.files;
             })
             .then(files => {
                 if (files.length === 0)
                     return console.log(
-                        chalk.red('No files specified; exiting'),
+                        chalk.red('⛔️ No files specified; exiting'),
                     );
 
                 console.log(
-                    chalk.blue(`Attempting to download ${files.length} files`),
+                    chalk.blue(
+                        `⬇️ Attempting to download ${files.length} files`,
+                    ),
                 );
             });
     },
