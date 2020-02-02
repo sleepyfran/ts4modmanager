@@ -54,3 +54,12 @@ export const parseUrlContent = (url, downloader) => {
         .then(pageContent => new JSDOM(pageContent).window.document)
         .then(pageDom => parsePageContent(pageDom, downloader));
 };
+
+/**
+ * Downloads a file from a given URL transforming it into a Blob once it's downloaded.
+ * @param {string} url URL of the file to download.
+ * @returns {Promise<Buffer | Blob>} A promise of the blob or buffer file from the given URL.
+ */
+export const downloadBlob = url => {
+    return fetch(url).then(response => response.blob());
+};

@@ -4,6 +4,7 @@ import {
     NotAnUrl,
     NotAvailable,
     UnrecognizedSite,
+    downloadBlob,
 } from '../../core/downloader';
 import { ModInfo, FileInfo } from '../../core/page-parser';
 import { getInput } from '../io';
@@ -75,16 +76,23 @@ export default {
                 return modInfo.files;
             })
             .then(files => {
-                if (files.length === 0)
-                    return console.log(
-                        chalk.red('⛔️ No files specified; exiting'),
-                    );
+                if (files.length === 0) {
+                    console.log(chalk.red('⛔️ No files specified; exiting'));
+                    return Promise.resolve([]);
+                }
 
                 console.log(
                     chalk.blue(
                         `⬇️ Attempting to download ${files.length} files`,
                     ),
                 );
+
+                const blobPromises = files.map(file => downloadBlob(file.url));
+                return Promise.all(blobPromises);
+            })
+            .then(blobs => {
+                // TODO: Add a handler for the blobs.
+                console.log(blobs);
             })
             .catch(err => {
                 console.log(
