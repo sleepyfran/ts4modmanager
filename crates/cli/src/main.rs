@@ -14,5 +14,8 @@ fn main() {
         .command(commands::uninstall::create())
         .command(commands::update::create());
 
+    #[cfg(debug_assertions)]
+    let app = { app.command(commands::debug::create()) };
+
     app.run(args);
 }
