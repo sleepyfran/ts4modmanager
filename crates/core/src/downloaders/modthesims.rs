@@ -1,7 +1,19 @@
+use url::Url;
+
 use super::{CreateAndUpdateDateSelector, DateInfoSelectors, Downloader, ModInfoSelectors};
 
-#[derive(Default)]
-pub struct ModTheSimsDownloader;
+pub struct ModTheSimsDownloader {
+    /// URL to download.
+    pub url: Url,
+}
+
+impl Default for ModTheSimsDownloader {
+    fn default() -> Self {
+        ModTheSimsDownloader {
+            url: Url::parse("https://nonsense.com").unwrap(),
+        }
+    }
+}
 
 impl Downloader for ModTheSimsDownloader {
     fn name(&self) -> String {

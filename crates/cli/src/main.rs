@@ -1,4 +1,6 @@
 mod commands;
+mod emoji;
+mod io;
 
 use seahorse::App;
 use std::env;
