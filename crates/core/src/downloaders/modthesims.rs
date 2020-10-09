@@ -45,4 +45,8 @@ impl Downloader for ModTheSimsDownloader {
     fn get_download_selector(&self) -> String {
         "#actualtab1 > table".into()
     }
+
+    fn get_url(&self) -> String {
+        self.url.clone().into_string()
+    }
 }

@@ -1,7 +1,10 @@
 use console::style;
 use seahorse::{Command, Context};
+use std::error::Error;
 
-use core::downloaders::{find_for_url, FindResult};
+use core::downloaders::{download_page, find_for_url, DownloadResult, FindResult};
+
+use crate::{emoji, io};
 
 /// Creates a command that helps with debugging a mod.
 pub fn create() -> Command {
@@ -26,15 +29,46 @@ fn handler(context: &Context) {
                 let downloader = find_for_url(url);
 
                 match downloader {
-                    FindResult::InvalidUrl => println!("{}", style("Invalid URL").red()),
-                    FindResult::UnrecognizedUrl => println!("{}", style("Unrecognized URL").red()),
+                    FindResult::InvalidUrl => show_error("Invalid URL"),
+                    FindResult::UnrecognizedUrl => show_error("Unrecognized URL"),
+                    FindResult::Found(d) => io::show_info(
+                        emoji::for_info(),
+                        format!("{} {}", "The URL matches the downloader for", d.name()),
+                    ),
+                }
+            }
+        }
+        "download_page" => {
+            if context.args.len() < 2 {
+                println!("{}", style("No URL provided").red());
+            } else {
+                let url = &context.args[1];
+                let downloader = find_for_url(url);
+
+                io::show_info(emoji::for_fetching(), format!("Retrieving {}", url));
+
+                match downloader {
                     FindResult::Found(d) => {
-                        println!(
-                            "{} {}",
-                            style("The URL matches the downloader for").green(),
-                            d.name()
-                        );
+                        let response = download_page(&*d);
+
+                        match response {
+                            DownloadResult::Unknown(error) => show_error(error.to_string()),
+                            DownloadResult::NotFound => show_error("404"),
+                            DownloadResult::HttpError(code) => {
+                                show_error(format!("Got a {} code", code))
+                            }
+                            DownloadResult::StringTransformationError => {
+                                show_error("Error transforming the response into a string")
+                            }
+                            DownloadResult::Success(string) => io::show_success(
+                                emoji::for_info(),
+                                format!("Cool, it worked. \n {}", string),
+                            ),
+                        }
                     }
+                    _ => panic!(
+                        "Something went wrong and you were too lazy to handle it properly :)"
+                    ),
                 }
             }
         }
@@ -42,4 +76,8 @@ fn handler(context: &Context) {
             println!("{}", style("Unrecognized command").red());
         }
     }
+}
+
+fn show_error<S: Into<String>>(error: S) {
+    io::show_error(emoji::for_error(), error);
 }

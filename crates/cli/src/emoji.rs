@@ -18,7 +18,12 @@ pub fn for_info() -> Emoji {
 
 /// Returns the assigned emoji for warnings.
 pub fn for_warning() -> Emoji {
-    Emoji("⚠️".into())
+    Emoji("⚠️ ".into())
+}
+
+/// Returns the assigned emoji for questions.
+pub fn for_question() -> Emoji {
+    Emoji("🤨".into())
 }
 
 /// Returns the assigned emoji for errors.
@@ -36,7 +41,12 @@ pub fn for_unsuccessful() -> Emoji {
     Emoji("☹️ ".into())
 }
 
-/// Returns the assigned emoji for the fetch operation (loading and fetching).
+/// Returns the assigned emoji for the parse operation.
 pub fn for_fetching() -> Emoji {
+    Emoji("🚚".into())
+}
+
+/// Returns the assigned emoji for the parse operation.
+pub fn for_parsing() -> Emoji {
     Emoji("🕵🏻‍♂️".into())
 }

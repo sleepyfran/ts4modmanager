@@ -1,7 +1,8 @@
+use dialoguer::Confirm;
 use seahorse::{Command, Context};
 
 use core::downloaders;
-use core::downloaders::{Downloader, FindResult};
+use core::downloaders::{DownloadResult, Downloader, FindResult, ModInfo, ParseResult};
 
 use crate::emoji;
 use crate::io;
@@ -39,16 +40,60 @@ fn attempt_to_find_downloader_for(url: &str) {
             emoji::for_unsuccessful(),
             "We couldn't find any downloader for your URL",
         ),
-        FindResult::Found(downloader) => install_with(downloader),
+        FindResult::Found(downloader) => fetch_page(&*downloader),
     }
 }
 
-fn install_with(downloader: Box<dyn Downloader>) {
+fn fetch_page(downloader: &dyn Downloader) {
     io::show_info(
         emoji::for_fetching(),
-        format!(
-            "URL matched for {}, fetching page and parsing...",
-            downloader.name()
-        ),
+        format!("URL matched for {}, fetching page...", downloader.name()),
     );
+
+    let page_content = downloaders::download_page(downloader);
+    match page_content {
+        DownloadResult::Unknown(_) => io::show_error(
+            emoji::for_error(),
+            "There was an error loading the page. Is your internet working?",
+        ),
+        DownloadResult::NotFound => io::show_error(
+            emoji::for_error(),
+            "The URL returned a 404, which means not found. Did you copy the correct URL?",
+        ),
+        DownloadResult::Success(content) => parse_page(content, downloader),
+        _ => io::show_error(
+            emoji::for_error(),
+            "There was some HTTP error, maybe try again?",
+        ),
+    }
+}
+
+fn parse_page(content: String, downloader: &dyn Downloader) {
+    io::show_info(emoji::for_parsing(), "Parsing page content...");
+
+    let mod_info = downloaders::parse_mod_info(content, downloader);
+    match mod_info {
+        ParseResult::ErrorRetrievingDate
+        | ParseResult::ErrorRetrievingFiles
+        | ParseResult::ErrorRetrievingName => io::show_error(emoji::for_error(), "Unable to correctly parse the page content. If you believe this is a bug, please report it"),
+        ParseResult::Success(mod_info) => ask_confirmation(mod_info),
+    }
+}
+
+fn ask_confirmation(mod_info: ModInfo) {
+    let confirmed = Confirm::new()
+        .with_prompt(io::text_for_info(
+            emoji::for_question(),
+            format!(
+                "Finished parsing the page. Do you want to install the mod {}?",
+                mod_info.name
+            ),
+        ))
+        .interact()
+        .unwrap_or_default();
+    if confirmed {
+        io::show_info(emoji::for_fetching(), "Coming soon")
+    } else {
+        io::show_info(emoji::for_warning(), "Okay, nothing was installed")
+    };
 }

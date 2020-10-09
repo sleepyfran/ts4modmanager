@@ -1,7 +1,13 @@
+mod download_page;
 mod find_for_url;
 mod modthesims;
+mod parse_content;
 
-pub use find_for_url::{find_for_url, FindResult};
+use chrono::{DateTime, Utc};
+
+pub use download_page::*;
+pub use find_for_url::*;
+pub use parse_content::*;
 
 /// Different types of selectors for the created and updated dates.
 pub enum CreateAndUpdateDateSelector {
@@ -32,10 +38,8 @@ pub enum CreateAndUpdateDateSelector {
 pub struct DateInfoSelectors {
     /// Format of the date to parse.
     pub format: String,
-
     /// Locale of the date to parse.
     pub locale: String,
-
     /// Selectors for the created and updated dates.
     pub selector: CreateAndUpdateDateSelector,
 }
@@ -58,4 +62,17 @@ pub trait Downloader {
     fn get_info_selectors(&self) -> ModInfoSelectors;
     fn get_date_selectors(&self) -> DateInfoSelectors;
     fn get_download_selector(&self) -> String;
+
+    /// Retrieves the saved URL.
+    fn get_url(&self) -> String;
+}
+
+/// Defines all the information needed regarding a mod after it's been parsed.
+pub struct ModInfo {
+    /// Name of the mod.
+    pub name: String,
+    /// Date when the mod was first uploaded.
+    pub created: DateTime<Utc>,
+    /// Date of the last update of the mod.
+    pub updated: DateTime<Utc>,
 }

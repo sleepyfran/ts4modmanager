@@ -11,3 +11,4 @@ core = { path = "../core" }
 
 console = "0.12.0"
 seahorse = "1.0.0"
+dialoguer = "0.6.2"
