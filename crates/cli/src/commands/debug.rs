@@ -43,31 +43,20 @@ fn handler(context: &Context) {
                 println!("{}", style("No URL provided").red());
             } else {
                 let url = &context.args[1];
-                let downloader = find_for_url(url);
-
                 io::show_info(emoji::for_fetching(), format!("Retrieving {}", url));
 
-                match downloader {
-                    FindResult::Found(d) => {
-                        let response = download_page(&*d);
+                let response = download_page(url);
 
-                        match response {
-                            DownloadResult::Unknown(error) => show_error(error.to_string()),
-                            DownloadResult::NotFound => show_error("404"),
-                            DownloadResult::HttpError(code) => {
-                                show_error(format!("Got a {} code", code))
-                            }
-                            DownloadResult::StringTransformationError => {
-                                show_error("Error transforming the response into a string")
-                            }
-                            DownloadResult::Success(string) => io::show_success(
-                                emoji::for_info(),
-                                format!("Cool, it worked. \n {}", string),
-                            ),
-                        }
+                match response {
+                    DownloadResult::Unknown(error) => show_error(error.to_string()),
+                    DownloadResult::NotFound => show_error("404"),
+                    DownloadResult::HttpError(code) => show_error(format!("Got a {} code", code)),
+                    DownloadResult::StringTransformationError => {
+                        show_error("Error transforming the response into a string")
                     }
-                    _ => panic!(
-                        "Something went wrong and you were too lazy to handle it properly :)"
+                    DownloadResult::Success(string) => io::show_success(
+                        emoji::for_info(),
+                        format!("Cool, it worked. \n {}", string),
                     ),
                 }
             }

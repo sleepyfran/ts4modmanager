@@ -40,17 +40,17 @@ fn attempt_to_find_downloader_for(url: &str) {
             emoji::for_unsuccessful(),
             "We couldn't find any downloader for your URL",
         ),
-        FindResult::Found(downloader) => fetch_page(&*downloader),
+        FindResult::Found(downloader) => fetch_page(url, &*downloader),
     }
 }
 
-fn fetch_page(downloader: &dyn Downloader) {
+fn fetch_page(url: &str, downloader: &dyn Downloader) {
     io::show_info(
         emoji::for_fetching(),
         format!("URL matched for {}, fetching page...", downloader.name()),
     );
 
-    let page_content = downloaders::download_page(downloader);
+    let page_content = downloaders::download_page(url);
     match page_content {
         DownloadResult::Unknown(_) => io::show_error(
             emoji::for_error(),

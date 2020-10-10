@@ -1,7 +1,5 @@
 use minreq::Error;
 
-use super::Downloader;
-
 /// Defines the different result for the download page operation.
 pub enum DownloadResult {
     Unknown(Error),
@@ -13,8 +11,8 @@ pub enum DownloadResult {
 
 /// Downloads the page specified in the downloader's URL and transforms it into a string containing
 /// the HTML.
-pub fn download_page(downloader: &dyn Downloader) -> DownloadResult {
-    let response = minreq::get(downloader.get_url()).send();
+pub fn download_page(url: &str) -> DownloadResult {
+    let response = minreq::get(url).send();
 
     if let Ok(response) = response {
         match response.status_code {

@@ -62,9 +62,6 @@ pub trait Downloader {
     fn get_info_selectors(&self) -> ModInfoSelectors;
     fn get_date_selectors(&self) -> DateInfoSelectors;
     fn get_download_selector(&self) -> String;
-
-    /// Retrieves the saved URL.
-    fn get_url(&self) -> String;
 }
 
 /// Defines all the information needed regarding a mod after it's been parsed.

@@ -1,19 +1,7 @@
-use url::Url;
-
 use super::{CreateAndUpdateDateSelector, DateInfoSelectors, Downloader, ModInfoSelectors};
 
-pub struct ModTheSimsDownloader {
-    /// URL to download.
-    pub url: Url,
-}
-
-impl Default for ModTheSimsDownloader {
-    fn default() -> Self {
-        ModTheSimsDownloader {
-            url: Url::parse("https://nonsense.com").unwrap(),
-        }
-    }
-}
+#[derive(Default)]
+pub struct ModTheSimsDownloader;
 
 impl Downloader for ModTheSimsDownloader {
     fn name(&self) -> String {
@@ -44,9 +32,5 @@ impl Downloader for ModTheSimsDownloader {
 
     fn get_download_selector(&self) -> String {
         "#actualtab1 > table".into()
-    }
-
-    fn get_url(&self) -> String {
-        self.url.clone().into_string()
     }
 }
