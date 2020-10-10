@@ -48,5 +48,5 @@ pub fn for_fetching() -> Emoji {
 
 /// Returns the assigned emoji for the parse operation.
 pub fn for_parsing() -> Emoji {
-    Emoji("🕵🏻‍♂️".into())
+    Emoji("🔬".into())
 }
