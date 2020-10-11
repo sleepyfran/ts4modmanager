@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Launch",
+      "args": [],
+      "program": "${workspaceFolder}/target/debug/cli",
+      "linux": {
+        "program": "${workspaceFolder}/target/debug/cli"
+      },
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "sourceLanguages": ["rust"],
+      "sourceMap": {
+        "/rustc/*": "${env:HOME}/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/lib/rustlib/src/rust"
+      }
+    }
+  ]
+}

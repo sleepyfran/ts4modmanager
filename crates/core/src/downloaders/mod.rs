@@ -1,47 +1,41 @@
 mod download_page;
 mod find_for_url;
 mod modthesims;
-mod parse_content;
+mod parser;
 
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 
 pub use download_page::*;
 pub use find_for_url::*;
-pub use parse_content::*;
+pub use parser::*;
 
-/// Different types of selectors for the created and updated dates.
-pub enum CreateAndUpdateDateSelector {
-    /// Case in which both the created and updated date are contained in the same container.
-    Same {
-        /// Regex to parse the date.
-        regex: String,
-        /// Selector that has both
-        selector: String,
-    },
+pub struct SameDateInfoSelectors {
+    /// Regex to parse the created date.
+    created_regex: String,
+    /// Regex to parse the updated date.
+    updated_regex: String,
+    /// Selector that has both
+    selector: String,
+}
 
-    /// Case in which they're in different containers.
-    Different {
-        /// Regex to parse the created date.
-        created_regex: String,
-        /// Selector of the created date.
-        created_selector: String,
-        /// Separator between the dates, if any.
-        separator: Option<String>,
-        /// Selector of the updated date.
-        updated_selector: String,
-        /// Regex to parse the updated date.
-        updated_regex: String,
-    },
+pub struct DifferentDateInfoSelectors {
+    /// Regex to parse the created date.
+    created_regex: String,
+    /// Selector of the created date.
+    created_selector: String,
+    /// Selector of the updated date.
+    updated_selector: String,
+    /// Regex to parse the updated date.
+    updated_regex: String,
 }
 
 /// Collects all selectors for the date information about updates.
-pub struct DateInfoSelectors {
-    /// Format of the date to parse.
-    pub format: String,
-    /// Locale of the date to parse.
-    pub locale: String,
-    /// Selectors for the created and updated dates.
-    pub selector: CreateAndUpdateDateSelector,
+pub enum DateInfoSelectors {
+    /// Case in which both the created and updated date are contained in the same container.
+    Same(SameDateInfoSelectors),
+
+    /// Case in which they're in different containers.
+    Different(DifferentDateInfoSelectors),
 }
 
 /// Collects all the selectors for the general information of the mod.
@@ -62,6 +56,9 @@ pub trait Downloader {
     fn get_info_selectors(&self) -> ModInfoSelectors;
     fn get_date_selectors(&self) -> DateInfoSelectors;
     fn get_download_selector(&self) -> String;
+
+    /// Function called by the date parser after matching the regex given by this same downloader.
+    fn parse_date(&self, date: &str) -> Option<NaiveDateTime>;
 }
 
 /// Defines all the information needed regarding a mod after it's been parsed.
@@ -69,7 +66,7 @@ pub struct ModInfo {
     /// Name of the mod.
     pub name: String,
     /// Date when the mod was first uploaded.
-    pub created: DateTime<Utc>,
+    pub created: NaiveDateTime,
     /// Date of the last update of the mod.
-    pub updated: DateTime<Utc>,
+    pub updated: NaiveDateTime,
 }

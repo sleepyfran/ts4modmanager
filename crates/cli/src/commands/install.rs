@@ -1,3 +1,4 @@
+use console::style;
 use dialoguer::Confirm;
 use seahorse::{Command, Context};
 
@@ -21,7 +22,7 @@ fn handler(context: &Context) {
     } else {
         io::show_error(emoji::for_error(), "No URL specified");
         io::show_info(
-            emoji::for_info(),
+            emoji::for_sucess(),
             "Usage: ts4mods install https://test.com/mod",
         )
     }
@@ -60,7 +61,7 @@ fn fetch_page(url: &str, downloader: &dyn Downloader) {
             emoji::for_error(),
             "The URL returned a 404, which means not found. Did you copy the correct URL?",
         ),
-        DownloadResult::Success(content) => parse_page(content, downloader),
+        DownloadResult::Success(content) => parse_page(&content, downloader),
         _ => io::show_error(
             emoji::for_error(),
             "There was some HTTP error, maybe try again?",
@@ -68,26 +69,31 @@ fn fetch_page(url: &str, downloader: &dyn Downloader) {
     }
 }
 
-fn parse_page(content: String, downloader: &dyn Downloader) {
+fn parse_page(content: &str, downloader: &dyn Downloader) {
     io::show_info(emoji::for_parsing(), "Parsing page content...");
 
     let mod_info = downloaders::parse_mod_info(content, downloader);
     match mod_info {
-        ParseResult::ErrorRetrievingDate
         | ParseResult::ErrorRetrievingFiles
-        | ParseResult::ErrorRetrievingName => io::show_error(emoji::for_error(), "Unable to correctly parse the page content. If you believe this is a bug, please report it"),
+        | ParseResult::ErrorRetrievingInfo => io::show_error(emoji::for_error(), "Unable to correctly parse the page content. If you believe this is a bug, please report it"),
         ParseResult::Success(mod_info) => ask_confirmation(mod_info),
     }
 }
 
 fn ask_confirmation(mod_info: ModInfo) {
+    io::show_success(
+        emoji::for_parsing(),
+        format!(
+            "Finished parsing the page. Found the mod {}, updated {}",
+            style(&mod_info.name).blue(),
+            style(&mod_info.updated).blue()
+        ),
+    );
+
     let confirmed = Confirm::new()
         .with_prompt(io::text_for_info(
             emoji::for_question(),
-            format!(
-                "Finished parsing the page. Do you want to install the mod {}?",
-                mod_info.name
-            ),
+            format!("Are you sure you want to install {}?", mod_info.name),
         ))
         .interact()
         .unwrap_or_default();

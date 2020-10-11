@@ -1,6 +1,5 @@
 use console::style;
 use seahorse::{Command, Context};
-use std::error::Error;
 
 use core::downloaders::{download_page, find_for_url, DownloadResult, FindResult};
 
@@ -32,7 +31,7 @@ fn handler(context: &Context) {
                     FindResult::InvalidUrl => show_error("Invalid URL"),
                     FindResult::UnrecognizedUrl => show_error("Unrecognized URL"),
                     FindResult::Found(d) => io::show_info(
-                        emoji::for_info(),
+                        emoji::for_sucess(),
                         format!("{} {}", "The URL matches the downloader for", d.name()),
                     ),
                 }
@@ -55,7 +54,7 @@ fn handler(context: &Context) {
                         show_error("Error transforming the response into a string")
                     }
                     DownloadResult::Success(string) => io::show_success(
-                        emoji::for_info(),
+                        emoji::for_sucess(),
                         format!("Cool, it worked. \n {}", string),
                     ),
                 }

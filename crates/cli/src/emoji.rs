@@ -12,7 +12,7 @@ impl Display for Emoji {
 }
 
 /// Returns the assigned emoji for info.
-pub fn for_info() -> Emoji {
+pub fn for_sucess() -> Emoji {
     Emoji("✅".into())
 }
 
