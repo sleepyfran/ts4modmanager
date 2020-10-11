@@ -1,7 +1,7 @@
 use chrono::{Duration, NaiveDateTime, NaiveTime, Utc};
 use regex::Regex;
 
-use super::{DateInfoSelectors, Downloader, ModInfoSelectors, SameDateInfoSelectors};
+use super::{DateInfoSelectors, Downloader, FileSelector, ModInfoSelectors, SameDateInfoSelectors};
 
 #[derive(Default)]
 pub struct ModTheSimsDownloader;
@@ -32,8 +32,11 @@ impl Downloader for ModTheSimsDownloader {
         })
     }
 
-    fn get_download_selector(&self) -> String {
-        "#actualtab1 > table".into()
+    fn get_download_selector(&self) -> FileSelector {
+        FileSelector {
+            selector: "#actualtab1 > table".into(),
+            contained_in_table: true,
+        }
     }
 
     fn parse_date(&self, date: &str) -> Option<NaiveDateTime> {

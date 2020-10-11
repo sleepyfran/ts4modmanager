@@ -29,7 +29,7 @@ pub struct DifferentDateInfoSelectors {
     updated_regex: String,
 }
 
-/// Collects all selectors for the date information about updates.
+/// Collects the different ways selectors can be regarding created/updated dates.
 pub enum DateInfoSelectors {
     /// Case in which both the created and updated date are contained in the same container.
     Same(SameDateInfoSelectors),
@@ -44,6 +44,15 @@ pub struct ModInfoSelectors {
     pub name: String,
 }
 
+/// Collects the different ways selectors can be regarding files.
+pub struct FileSelector {
+    /// Selector of the files section.
+    pub selector: String,
+    /// Indicates whether the content retrieved from the selector is contained inside a table (which
+    /// can contain multiple items) or is just a plain element with the file.
+    pub contained_in_table: bool,
+}
+
 /// Defines the behavior that all downloaders should adhere to.
 pub trait Downloader {
     /// Name of the webpage that we're trying to download the mod from.
@@ -55,10 +64,18 @@ pub trait Downloader {
     /// Returns all the selectors that allow to query the mod information.
     fn get_info_selectors(&self) -> ModInfoSelectors;
     fn get_date_selectors(&self) -> DateInfoSelectors;
-    fn get_download_selector(&self) -> String;
+    fn get_download_selector(&self) -> FileSelector;
 
     /// Function called by the date parser after matching the regex given by this same downloader.
     fn parse_date(&self, date: &str) -> Option<NaiveDateTime>;
+}
+
+/// Defines the information of a file available to download from a mod.
+pub struct File {
+    /// Name of the file.
+    pub name: String,
+    /// URL to download the file.
+    pub url: String,
 }
 
 /// Defines all the information needed regarding a mod after it's been parsed.
@@ -69,4 +86,6 @@ pub struct ModInfo {
     pub created: NaiveDateTime,
     /// Date of the last update of the mod.
     pub updated: NaiveDateTime,
+    /// Files available in the download section.
+    pub files: Vec<File>,
 }

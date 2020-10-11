@@ -74,8 +74,8 @@ fn parse_page(content: &str, downloader: &dyn Downloader) {
 
     let mod_info = downloaders::parse_mod_info(content, downloader);
     match mod_info {
-        | ParseResult::ErrorRetrievingFiles
-        | ParseResult::ErrorRetrievingInfo => io::show_error(emoji::for_error(), "Unable to correctly parse the page content. If you believe this is a bug, please report it"),
+        ParseResult::ErrorRetrievingInfo => io::show_error(emoji::for_error(), "Unable to correctly parse the page content. If you believe this is a bug, please report it"),
+        ParseResult::ErrorRetrievingFiles => io::show_error(emoji::for_error(), "Unable to retrieve any files. Is the URL pointing to a mod with downloadable content? If you believe this is a bug, please report it"),
         ParseResult::Success(mod_info) => ask_confirmation(mod_info),
     }
 }
@@ -84,9 +84,10 @@ fn ask_confirmation(mod_info: ModInfo) {
     io::show_success(
         emoji::for_parsing(),
         format!(
-            "Finished parsing the page. Found the mod {}, updated {}",
+            "Finished parsing the page. Found the mod {}, updated {} with {} file(s)",
             style(&mod_info.name).blue(),
-            style(&mod_info.updated).blue()
+            style(&mod_info.updated).blue(),
+            style(&mod_info.files.len()).blue()
         ),
     );
 

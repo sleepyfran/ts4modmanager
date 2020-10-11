@@ -1,7 +1,8 @@
 mod date_parser;
+mod file_parser;
 mod mod_info_parser;
 
-use scraper::{Html, Selector};
+use scraper::{ElementRef, Html, Selector};
 
 use super::{Downloader, ModInfo};
 
@@ -26,18 +27,28 @@ pub fn parse_mod_info(html_content: &str, downloader: &dyn Downloader) -> ParseR
     let mod_info = mod_info_parser::retrieve_mod_info(&input);
 
     match mod_info {
-        Some(info) => ParseResult::Success(info),
+        Some(info) => {
+            if info.files.is_empty() {
+                ParseResult::ErrorRetrievingFiles
+            } else {
+                ParseResult::Success(info)
+            }
+        }
         None => ParseResult::ErrorRetrievingInfo,
     }
 }
 
-/// Retrieves the text content of an element if it exists.
+/// Retrieves the text content of an element if it exists given its selector.
 fn content_from_selector(input: &ParseInput, selector: &str) -> Option<String> {
     let selector = Selector::parse(selector).unwrap();
     input
         .html
         .select(&selector)
         .next()
-        .map(|element| element.text().collect::<String>())
-        .map(|content| content.trim().replace("\n", " "))
+        .map(content_from_element)
+}
+
+/// Retrieves the text content of an element.
+fn content_from_element(element: ElementRef) -> String {
+    element.text().collect::<String>().trim().replace("\n", " ")
 }
