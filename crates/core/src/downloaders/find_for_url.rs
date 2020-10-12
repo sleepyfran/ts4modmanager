@@ -44,3 +44,38 @@ fn get_all_downloaders() -> Vec<Box<dyn Downloader>> {
 fn is_valid_url(url: &str) -> bool {
     Url::parse(url).is_ok()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_for_url_should_fail_with_invalid_url() {
+        let downloader = find_for_url("htt");
+        match downloader {
+            FindResult::InvalidUrl => {}
+            FindResult::UnrecognizedUrl => panic!(),
+            FindResult::Found(_) => panic!(),
+        }
+    }
+
+    #[test]
+    fn test_find_for_url_should_fail_with_unrecognized_url() {
+        let downloader = find_for_url("https://unknown.com/test.html");
+        match downloader {
+            FindResult::InvalidUrl => panic!(),
+            FindResult::UnrecognizedUrl => {}
+            FindResult::Found(_) => panic!(),
+        }
+    }
+
+    #[test]
+    fn test_find_for_url_should_resolve_modthesims() {
+        let modthesims_downloader = find_for_url("https://modthesims.info/test.html");
+        match modthesims_downloader {
+            FindResult::InvalidUrl => panic!(),
+            FindResult::UnrecognizedUrl => panic!(),
+            FindResult::Found(mts) => assert_eq!(mts.name(), "ModTheSims"),
+        }
+    }
+}
