@@ -1,9 +1,9 @@
 use console::style;
-use dialoguer::Confirm;
+use dialoguer::{theme::ColorfulTheme, Confirm, Select};
 use seahorse::{Command, Context};
 
 use core::downloaders;
-use core::downloaders::{DownloadResult, Downloader, FindResult, ModInfo, ParseResult};
+use core::downloaders::{DownloadResult, Downloader, File, FindResult, ModInfo, ParseResult};
 
 use crate::emoji;
 use crate::io;
@@ -76,25 +76,51 @@ fn parse_page(content: &str, downloader: &dyn Downloader) {
     match mod_info {
         ParseResult::ErrorRetrievingInfo => io::show_error(emoji::for_error(), "Unable to correctly parse the page content. If you believe this is a bug, please report it"),
         ParseResult::ErrorRetrievingFiles => io::show_error(emoji::for_error(), "Unable to retrieve any files. Is the URL pointing to a mod with downloadable content? If you believe this is a bug, please report it"),
-        ParseResult::Success(mod_info) => ask_confirmation(mod_info),
+        ParseResult::Success(mod_info) => check_for_multiple_files(&mod_info),
     }
 }
 
-fn ask_confirmation(mod_info: ModInfo) {
-    io::show_success(
-        emoji::for_parsing(),
-        format!(
-            "Finished parsing the page. Found the mod {}, updated {} with {} file(s)",
-            style(&mod_info.name).blue(),
-            style(&mod_info.updated).blue(),
-            style(&mod_info.files.len()).blue()
-        ),
+fn check_for_multiple_files(mod_info: &ModInfo) {
+    io::show_success(emoji::for_parsing(), "Finished parsing the page");
+    io::show_info(
+        emoji::for_search(),
+        format! {"Found the mod {}, last updated {}", style(&mod_info.name), style(&mod_info.updated)},
     );
 
+    if mod_info.files.len() == 1 {
+        ask_confirmation(mod_info, mod_info.files.first().unwrap());
+    } else {
+        handle_multiple_files(mod_info);
+    }
+}
+
+fn handle_multiple_files(mod_info: &ModInfo) {
+    io::show_info(
+        emoji::for_warning(),
+        "This mod contains multiple files to download, which one do you want to install?",
+    );
+
+    let chosen_index = Select::with_theme(&ColorfulTheme::default())
+        .items(
+            &mod_info
+                .files
+                .iter()
+                .map(|file| file.name.clone())
+                .collect::<Vec<String>>(),
+        )
+        .default(0)
+        .interact()
+        .unwrap();
+    let chosen_item = mod_info.files.get(chosen_index).unwrap();
+
+    ask_confirmation(mod_info, chosen_item);
+}
+
+fn ask_confirmation(mod_info: &ModInfo, file: &File) {
     let confirmed = Confirm::new()
         .with_prompt(io::text_for_info(
             emoji::for_question(),
-            format!("Are you sure you want to install {}?", mod_info.name),
+            format!("Are you sure you want to install {}?", file.name),
         ))
         .interact()
         .unwrap_or_default();

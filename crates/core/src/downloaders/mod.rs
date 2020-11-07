@@ -71,6 +71,7 @@ pub trait Downloader {
 }
 
 /// Defines the information of a file available to download from a mod.
+#[derive(Clone)]
 pub struct File {
     /// Name of the file.
     pub name: String,
@@ -79,6 +80,7 @@ pub struct File {
 }
 
 /// Defines all the information needed regarding a mod after it's been parsed.
+#[derive(Clone)]
 pub struct ModInfo {
     /// Name of the mod.
     pub name: String,
