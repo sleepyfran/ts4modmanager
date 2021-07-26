@@ -62,9 +62,16 @@ fn fetch_page(url: &str, downloader: &dyn Downloader) {
             "The URL returned a 404, which means not found. Did you copy the correct URL?",
         ),
         DownloadResult::Success(content) => parse_page(&content, downloader),
-        _ => io::show_error(
+        DownloadResult::HttpError(code) => io::show_error(
             emoji::for_error(),
-            "There was some HTTP error, maybe try again?",
+            format!(
+                "An error with code {} happened. This was not expected, maybe the page is busy or disallowing the tool to access the resource",
+                code
+            ),
+        ),
+        DownloadResult::StringTransformationError => io::show_error(
+            emoji::for_error(),
+            "The response given by the page was malformed",
         ),
     }
 }
